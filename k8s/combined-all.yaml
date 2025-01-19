@@ -1,0 +1,136 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: qr-app
+
+---
+
+# PostgreSQL Deployment and Service (Using Official PostgreSQL Image)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: qr-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:latest  # Official PostgreSQL image from Docker Hub
+        env:
+        - name: POSTGRES_USER
+          value: "user"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: POSTGRES_DB
+          value: "qrcodes"
+        ports:
+        - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+  namespace: qr-app
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: db
+  type: ClusterIP
+
+---
+
+# Backend Deployment and Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: qr-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: iblamevncnt/qr-backend:latest  # Replace with your Docker Hub repo
+        env:
+        - name: FLASK_ENV
+          value: "development"
+        - name: DB_HOST
+          value: "db-service"
+        - name: DB_PORT
+          value: "5432"
+        - name: POSTGRES_USER
+          value: "user"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: POSTGRES_DB
+          value: "qrcodes"
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: qr-app
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: backend
+  type: ClusterIP
+
+---
+
+# Frontend Deployment and Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: qr-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: iblamevncnt/qr-frontend:latest  # Replace with your Docker Hub repo
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: qr-app
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: frontend
+  type: LoadBalancer

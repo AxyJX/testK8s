@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Stapel:wght@800&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="Styles.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <title>QR Code Generator</title>
+</head>
+<body class="bg-white flex items-center justify-center min-h-screen">
+  <div class="flex w-2/3 bg-gray-50 rounded-lg shadow-lg overflow-hidden">
+    <div class="w-1/2 p-6 center-content">
+      <div class="flex items-center mb-4">
+        <button class="p-2 bg-gray-200 w-12 h-12 flex items-center justify-center rounded-l" onclick="showLinkInput()">
+          <i class="fas fa-qrcode text-2xl"></i>
+        </button>
+        <button class="p-2 bg-gray-200 w-12 h-12 flex items-center justify-center rounded-r" onclick="showWifiInput()">
+          <i class="fas fa-wifi text-2xl"></i>
+        </button>
+      </div>
+      <div id="linkInputContainer" class="flex flex-col items-center w-full">
+        <h1 class="text-7xl stapel-font text-left w-full mb-4">
+          Convert your Link to QR code
+        </h1>
+        <input id="linkInput" class="w-full p-3 border border-gray-300 rounded mb-3 text-center" type="text" placeholder="Enter your link here"/>
+        <p class="text-black text-left w-full text-sm">
+          Your QR code will be generated automatically, your generated QR code will open this URL
+        </p>
+      </div>
+      <div id="wifiInputContainer" class="hidden flex flex-col items-center w-full">
+        <h1 class="text-7xl stapel-font text-left w-full mb-4">
+          Convert your Wifi to QR code
+        </h1>
+        <input id="ssidInput" class="w-full p-3 border border-gray-300 rounded mb-3 text-center" type="text" placeholder="Enter your SSID here"/>
+        <input id="passwordInput" class="w-full p-3 border border-gray-300 rounded mb-3 text-center" type="text" placeholder="Enter your password here"/>
+        <p class="text-black text-left w-full text-sm">
+          Your QR code will be generated automatically, your generated QR code will connect to this WiFi
+        </p>
+      </div>
+    </div>
+    <div class="w-1/2 p-8 bg-white flex flex-col items-center justify-center">
+      <div id="qrcode" class="border-4 border-black p-3 mb-4" style="width: 500px; height: 500px;"></div>
+      <button id="downloadBtn" type="button" class="bg-blue-600 text-white text-lg px-6 py-2 rounded mb-4 btn-bold" style="width: 500px;" disabled>
+        Download
+      </button>
+    </div>
+  </div>
+  <script src="scripts.js"></script>
+</body>
+</html>
