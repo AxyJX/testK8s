@@ -6,7 +6,38 @@ metadata:
 
 ---
 
-# PostgreSQL Deployment and Service (Using Official PostgreSQL Image)
+# PersistentVolume for PostgreSQL
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+  namespace: qr-app
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/postgres  # Path on the host machine for local storage (adjust as needed)
+
+---
+
+# PersistentVolumeClaim for PostgreSQL
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: qr-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
+# PostgreSQL Deployment and Service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,7 +55,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:latest  # Official PostgreSQL image from Docker Hub
+        image: postgres:latest  # Official PostgreSQL image
         env:
         - name: POSTGRES_USER
           value: "user"
@@ -32,8 +63,19 @@ spec:
           value: "password"
         - name: POSTGRES_DB
           value: "qrcodes"
-        ports:
-        - containerPort: 5432
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data  # For database persistence
+        - name: init-sql
+          mountPath: /docker-entrypoint-initdb.d  # For `init.sql` execution
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+      - name: init-sql
+        hostPath:
+          path: /db/init.sql  # Replace with the directory containing `init.sql`
+          type: Directory
 ---
 apiVersion: v1
 kind: Service
