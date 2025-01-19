@@ -22,7 +22,7 @@ spec:
 
 ---
 
-# PersistentVolumeClaim for PostgreSQL
+# PVC for PostgreSQL
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
