@@ -38,6 +38,19 @@ spec:
 ---
 
 # PostgreSQL Deployment and Service
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init-sql
+  namespace: qr-app
+data:
+  init.sql: |
+    CREATE TABLE qr_codes (
+        id SERIAL PRIMARY KEY,
+        image BYTEA NULL
+    );
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -67,15 +80,15 @@ spec:
         - name: postgres-data
           mountPath: /var/lib/postgresql/data  # For database persistence
         - name: init-sql
-          mountPath: /docker-entrypoint-initdb.d  # For `init.sql` execution
+          mountPath: /docker-entrypoint-initdb.d/init.sql
+          subPath: init.sql  # Mount only the `init.sql` file from the ConfigMap
       volumes:
       - name: postgres-data
         persistentVolumeClaim:
           claimName: postgres-pvc
       - name: init-sql
-        hostPath:
-          path: /db/init.sql  # Replace with the directory containing `init.sql`
-          type: Directory
+        configMap:
+          name: db-init-sql
 ---
 apiVersion: v1
 kind: Service
@@ -99,7 +112,7 @@ metadata:
   name: backend
   namespace: qr-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -149,7 +162,7 @@ metadata:
   name: frontend
   namespace: qr-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontend

@@ -6,26 +6,13 @@ Backend
 
 https://hub.docker.com/repository/docker/iblamevncnt/qr-backend/general
 
-Build Dockerfile
+Step by step to run this abysmally ruined and horrifying code:
 
-docker build -t qr-frontend ./frontend
-
-docker build -t qr-backend ./backend
-
-docker pull postgres:latest
-
-Run Image
-
-docker run --name qr-db -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=qrcodes -p 5432:5432 -d postgres:latest
-
-docker run --name qr-backend -e FLASK_ENV=development -p 5000:5000 qr-backend
-
-docker run --name qr-frontend -p 8080:80 qr-frontend
-
-Apply YAML
-
-kubectl apply -f combined-all.yaml
-
+1. Run Minikube (minikube start)
+2. Create the namespace (kubectl create namespace qr-app)
+3. Apply YAML, make sure you are in k8s folder (kubectl apply combined-all.yaml)
+4. Verify pods, you need to wait 1-2 minutes (kubectl get pods -n qr-app)
+5. Access the web (minikube service frontend-service -n qr-app)
 
 
 
